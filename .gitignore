@@ -1,3 +1,5 @@
 *.md
-saved_voices/
+!README.md
+saved_voices/*
+!saved_voices/.gitkeep
 __pycache__/
