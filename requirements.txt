@@ -1,0 +1,11 @@
+torch>=2.1.0
+torchaudio>=2.1.0
+gradio>=4.0.0
+soundfile
+librosa
+modelscope
+huggingface_hub
+accelerate
+transformers
+faster-whisper>=1.1.0
+git+https://github.com/QwenLM/Qwen3-TTS.git
