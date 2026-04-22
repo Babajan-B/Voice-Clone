@@ -1,0 +1,15 @@
+{
+  "id": "20260422-151508_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1776860108.128256,
+  "created_at_iso": "2026-04-22T15:15:08",
+  "voice_name": "bob2",
+  "text": "Want to learn the statistics needed for machine learning without getting confused?\r\nThis app makes it super easy.\r\nIt explains core topics like probability, regression, distributions, and compound probability in a simple visual way.\r\nYou don’t just study the concepts, you actually see them working.\r\nIt even lets you do live experiments, like flipping a coin 100 times, so you can understand probability in real time.\r\nHonestly, it’s one of the easiest ways to learn machine learning statistics in a practical way.\r\nComment start and I’ll send you the link in DM.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 32.5,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260422-151508_synthesize_bob2.wav"
+}

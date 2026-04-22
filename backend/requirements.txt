@@ -1,0 +1,12 @@
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+torch>=2.1.0
+torchaudio>=2.1.0
+soundfile
+librosa
+huggingface_hub
+accelerate
+transformers
+faster-whisper>=1.1.0
+git+https://github.com/QwenLM/Qwen3-TTS.git

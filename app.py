@@ -300,6 +300,63 @@ def transcribe_uploaded_media(media_path, asr_model_size, asr_language, progress
 def copy_text_to_field(text):
     return text.strip() if text else ""
 
+# ── Voice-to-Voice Conversion Pipeline ──────────────────────────────
+
+def convert_voice_to_voice(media_path, voice_label, asr_model_size, asr_language, progress=gr.Progress()):
+    if not media_path:
+        return None, "", "Please upload an audio or video file."
+    if not voice_label:
+        return None, "", "Please select a saved voice profile."
+
+    # Step 1: Transcribe the full audio to text
+    progress(0.05, desc="Transcribing audio...")
+    try:
+        transcript, asr_status = transcribe_file_with_faster_whisper(
+            media_path, asr_model_size, asr_language, progress
+        )
+    except Exception as e:
+        return None, "", f"Transcription failed: {e}"
+    finally:
+        unload_asr_model()
+
+    if not transcript or not transcript.strip():
+        return None, "", "No speech detected in the uploaded media."
+
+    # Step 2: Load saved voice profile
+    progress(0.4, desc="Loading voice profile...")
+    ref_audio_tuple, ref_text = load_voice(voice_label)
+    if ref_audio_tuple is None:
+        return None, transcript, f"Could not load voice profile '{voice_label}'."
+
+    ref_sr, ref_np = ref_audio_tuple
+    ref_temp = audio_input_to_temp_wav((ref_sr, ref_np))
+
+    # Step 3: Single-pass TTS synthesis (same as the working Generate button)
+    progress(0.5, desc="Loading TTS model...")
+    tts_model = get_tts_model(progress)
+
+    progress(0.6, desc="Synthesizing with cloned voice (this may take a bit)...")
+    try:
+        wavs, out_sr = tts_model.generate_voice_clone(
+            text=transcript,
+            language="Auto",
+            ref_audio=ref_temp,
+            ref_text=ref_text,
+        )
+        final_audio = wavs[0]
+    except Exception as e:
+        return None, transcript, f"Voice synthesis failed: {e}"
+    finally:
+        if os.path.exists(ref_temp):
+            os.remove(ref_temp)
+
+    progress(1.0, desc="Done!")
+    duration = len(final_audio) / out_sr
+    status = f"Converted successfully. Output: {duration:.1f}s. Voice: {voice_label}. {asr_status}"
+    return (out_sr, final_audio), transcript, status
+
+# ── End Voice-to-Voice Pipeline ─────────────────────────────────────
+
 def find_available_port(preferred_port=7860, search_limit=20):
     for port in range(preferred_port, preferred_port + search_limit):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -422,6 +479,44 @@ with gr.Blocks(title="Qwen3-TTS Voice Clone") as interface:
                 interactive=False,
                 lines=2,
             )
+
+    with gr.Row():
+        with gr.Column():
+            gr.Markdown("### 4. Voice-to-Voice Converter")
+            gr.Markdown("Upload any audio/video → re-synthesize in a saved voice, matching original pacing, pauses, and pitch.")
+            v2v_media_input = gr.File(
+                label="Source Audio or Video (MP3, WAV, etc.)",
+                type="filepath",
+                file_count="single",
+            )
+            with gr.Row():
+                v2v_voice_dropdown = gr.Dropdown(
+                    choices=get_saved_voices(),
+                    label="Target Voice Profile",
+                    info="Which saved voice to use for conversion",
+                    scale=2,
+                )
+                v2v_refresh_btn = gr.Button("🔄", scale=0, min_width=50)
+            with gr.Row():
+                v2v_asr_model = gr.Dropdown(
+                    choices=ASR_MODEL_CHOICES,
+                    value="base",
+                    label="ASR Model Size",
+                )
+                v2v_asr_language = gr.Dropdown(
+                    choices=ASR_LANGUAGE_CHOICES,
+                    value="Auto",
+                    label="ASR Language",
+                )
+            v2v_convert_btn = gr.Button("🔁 Convert Voice", variant="primary", size="lg")
+            v2v_transcript = gr.Textbox(
+                label="Detected Segments",
+                placeholder="Timestamped transcript will appear here...",
+                lines=8,
+                interactive=False,
+            )
+            v2v_output_audio = gr.Audio(label="Converted Audio Output", type="numpy")
+            v2v_status = gr.Textbox(label="Conversion Status", interactive=False, lines=2)
             
     # Wirings
     saved_voices_dropdown.change(
@@ -494,6 +589,19 @@ with gr.Blocks(title="Qwen3-TTS Voice Clone") as interface:
         fn=clone_voice,
         inputs=[ref_audio_input, ref_text_input, target_text_input],
         outputs=[output_audio, output_msg]
+    )
+
+    # Voice-to-Voice wirings
+    v2v_refresh_btn.click(
+        fn=lambda: gr.update(choices=get_saved_voices()),
+        inputs=[],
+        outputs=[v2v_voice_dropdown],
+    )
+
+    v2v_convert_btn.click(
+        fn=convert_voice_to_voice,
+        inputs=[v2v_media_input, v2v_voice_dropdown, v2v_asr_model, v2v_asr_language],
+        outputs=[v2v_output_audio, v2v_transcript, v2v_status],
     )
 
 if __name__ == "__main__":
