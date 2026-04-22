@@ -1,118 +1,212 @@
 # Voice Clone
 
-Local Gradio app for:
+Local-first voice cloning studio built with a FastAPI backend and a Next.js frontend. It lets you create reusable voice profiles, transcribe audio and video with faster-whisper, synthesize new speech with Qwen3-TTS, and convert source audio into a saved voice style without leaving your machine.
 
-- voice cloning with Qwen3-TTS
-- speech-to-text transcription with `faster-whisper`
-- saving reusable voice profiles
-- converting uploaded audio or video into editable text before synthesis
+![Voice Clone Overview](docs/figures/voice-clone-overview.svg)
 
-## Features
+## Why This Project Exists
 
-- Upload or record a reference voice clip
-- Auto-transcribe the reference clip
-- Save voice profiles as `.wav` + `.txt`
-- Generate new speech using the saved voice style
-- Upload audio or video and transcribe it into readable text
-- Copy transcript text into:
-  - the reference transcript field
-  - the target text field
-- Automatically falls back to the next free local port if `7860` is busy
-- Loads heavy models on demand so only one large model stays in memory at a time
+Most voice tools are either API-first, cloud-only, or fragmented across separate scripts for transcription, reference management, and synthesis. Voice Clone packages those workflows into one local studio:
+
+- Create and reuse voice profiles from reference audio plus transcript pairs
+- Transcribe audio or video with subtitle export support
+- Generate brand-new speech in a saved voice style
+- Convert an existing recording into another saved voice
+- Keep audio, transcripts, and generated outputs on your own machine
+
+## What It Does
+
+- `Voice profiles`: save a reusable voice as `saved_voices/<name>.wav` + `saved_voices/<name>.txt`
+- `Speech synthesis`: generate target text in a reference voice with speed, pitch, and emotion controls
+- `Transcription`: upload audio or video and receive a cleaned transcript plus timed segments for `.srt` and `.vtt`
+- `Voice conversion`: transcribe source media, then re-synthesize it in a saved voice profile
+- `Streaming UX`: long-running jobs report progress through Server-Sent Events instead of blocking the UI
+- `Local runtime`: device auto-detection supports CUDA, Apple Silicon MPS, and CPU fallback
+
+## Figures
+
+### Product Overview
+
+![Product Overview](docs/figures/voice-clone-overview.svg)
+
+### System Architecture
+
+![Architecture Diagram](docs/figures/voice-clone-architecture.svg)
+
+### Request Lifecycle
+
+![Workflow Diagram](docs/figures/voice-clone-workflow.svg)
+
+## Demo Flow
+
+1. Open the web UI at `http://localhost:3000`
+2. Create a voice profile by recording or uploading a reference clip and saving its transcript
+3. Use the `Synthesize` tab to generate fresh speech in that voice
+4. Use the `Transcribe` tab to turn audio or video into text and subtitle files
+5. Use the `Voice Convert` tab to transcribe source media and re-speak it in a saved voice
 
 ## Tech Stack
 
-- Python
-- Gradio
-- Qwen3-TTS
-- faster-whisper
-- PyTorch
-- soundfile
+| Layer | Stack |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| Backend | FastAPI, Uvicorn, Python |
+| TTS | Qwen3-TTS |
+| ASR | faster-whisper |
+| Audio | librosa, soundfile, browser `MediaRecorder` |
 
-## Project Structure
+## Core Design Decisions
 
-```text
-Voice-Clone/
-├── app.py
-├── requirements.txt
-├── README.md
-├── plan.md
-├── prd.md
-├── cloudflare_setup.md
-└── saved_voices/
-    ├── *.wav
-    └── *.txt
-```
+### 1. Model mutual exclusion
 
-## Requirements
+Qwen3-TTS and faster-whisper are heavy enough to contend for memory, especially on Apple Silicon. The backend keeps this under control with `backend/services/model_manager.py`, which gates model access behind an `asyncio.Lock`. All ASR and TTS work goes through `with_asr()` or `with_tts()`.
 
-- Python 3.9+ recommended
-- Apple Silicon Mac, CPU, or CUDA GPU
-- Internet access on first model download
+### 2. SSE over WebSocket
 
-Notes:
+The long-running endpoints stream progress using Server-Sent Events:
 
-- Qwen3-TTS runs on `mps` on Apple Silicon when available
-- `faster-whisper` currently runs on CPU fallback in this app on macOS
-- first use of a selected Whisper model size downloads model files from Hugging Face
+- `POST /api/transcribe`
+- `POST /api/generate`
+- `POST /api/convert`
+- `POST /api/convert/finalize`
 
-## Installation
+The frontend consumes them with `fetch()` and `ReadableStream`, not `EventSource`, because the requests carry multipart form bodies.
 
-Create and activate a virtual environment, then install dependencies:
+### 3. Serialized audio delivery
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+Synthesized audio is returned in the final SSE payload as base64-encoded WAV, then converted into a browser `Blob URL` client-side. That avoids a second fetch just to retrieve generated audio.
 
-## Run
+### 4. File-pair voice profiles
 
-Start the app with:
-
-```bash
-./venv/bin/python app.py
-```
-
-The app will print something like:
-
-```bash
-Starting Gradio Web Server on http://127.0.0.1:7860
-```
-
-If `7860` is already in use, it will automatically try `7861`, `7862`, and so on.
-
-## How To Use
-
-### 1. Create or load a voice profile
-- Upload or record a reference audio clip
-- Type the exact transcript, or click `Transcribe Reference`
-- Enter a profile name
-- Click `Save Voice Profile`
-
-### 2. Generate new speech
-- Enter text in `Target Text to Synthesize`
-- Click `Generate`
-
-### 3. Transcribe source media
-- Upload an audio or video file
-- Choose an ASR model size
-- Click `Transcribe Media`
-- Copy the transcript into the reference transcript or target text box if needed
-
-## Saved Voice Profiles
-
-Each saved voice profile uses:
+There is no database. A voice profile is simply:
 
 - `saved_voices/<name>.wav`
 - `saved_voices/<name>.txt`
 
-The `.wav` file stores the reference audio.
-The `.txt` file stores the matching transcript.
+That keeps the project inspectable, hackable, and easy to back up.
 
-## ASR Model Sizes
+## Repository Layout
 
-Available transcription sizes:
+```text
+Voice-Clone/
+├── app.py                    # legacy Gradio app kept for reference
+├── start.sh                  # starts backend + frontend with health checks
+├── saved_voices/             # reusable voice profiles (<name>.wav + <name>.txt)
+├── generated/                # persisted generated outputs and metadata
+├── backend/
+│   ├── main.py               # FastAPI app, CORS, static mounts, router registration
+│   ├── config.py             # paths, model IDs, device detection, ASR choices
+│   ├── routers/
+│   │   ├── voices.py         # voice CRUD endpoints
+│   │   ├── inference.py      # transcribe, generate, convert, subtitles, unload
+│   │   ├── history.py        # generated output history endpoints
+│   │   └── status.py         # model/device/runtime status endpoint
+│   ├── services/
+│   │   ├── model_manager.py  # async-safe TTS/ASR loading and mutex
+│   │   ├── tts_service.py    # Qwen3-TTS wrapper
+│   │   ├── asr_service.py    # faster-whisper wrapper
+│   │   └── history.py        # output persistence
+│   └── utils/
+│       ├── audio.py          # upload normalization and temp-file handling
+│       ├── text.py           # transcript cleanup and formatting
+│       ├── subtitles.py      # SRT / VTT builders
+│       └── errors.py         # domain-specific API errors
+└── frontend/
+    ├── src/app/              # layout, page shell, theme tokens
+    ├── src/components/       # panels and shared UI primitives
+    ├── src/hooks/            # SSE, recorder, status, settings hooks
+    ├── src/lib/              # typed API client and helpers
+    └── src/types/            # shared TypeScript types
+```
+
+## Requirements
+
+- Python `3.9+`
+- Node.js `18+`
+- macOS, Linux, or Windows subsystem environments capable of running the Python and Next.js stacks
+- Enough free disk space for Qwen3-TTS plus whichever faster-whisper model you choose
+
+First run downloads the selected model artifacts from Hugging Face.
+
+## Quick Start
+
+```bash
+# 1. Create a Python environment
+python3 -m venv venv
+./venv/bin/pip install -r backend/requirements.txt
+
+# 2. Install frontend dependencies
+cd frontend
+npm install
+cd ..
+
+# 3. Start the full app
+./start.sh
+```
+
+Open:
+
+- UI: `http://localhost:3000`
+- API: `http://127.0.0.1:8000`
+- API docs: `http://127.0.0.1:8000/docs`
+
+## Manual Start
+
+```bash
+# Terminal 1
+cd backend
+../venv/bin/python -m uvicorn main:app --reload --port 8000
+
+# Terminal 2
+cd frontend
+npm run dev
+```
+
+## Frontend Experience
+
+The Next.js app exposes four main workflows:
+
+- `Voice Profiles`: record or upload reference audio, transcribe or edit the transcript, and save reusable voices
+- `Synthesize`: generate new speech from a reference voice profile
+- `Transcribe`: upload media and export transcript, `.srt`, or `.vtt`
+- `Voice Convert`: transcribe source media, then synthesize it using a saved voice profile
+
+The visual system uses a dark glassmorphism style defined in `frontend/src/app/globals.css`.
+
+## Backend API Overview
+
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/api/voices` | `GET` | list saved voices |
+| `/api/voices` | `POST` | save a voice profile |
+| `/api/voices/{name}` | `GET` | fetch voice transcript and audio URL |
+| `/api/voices/{name}` | `DELETE` | delete a voice profile |
+| `/api/transcribe` | `POST` | transcribe audio or video with progress SSE |
+| `/api/subtitles` | `POST` | convert transcript segments to `.srt` or `.vtt` |
+| `/api/generate` | `POST` | synthesize text from a reference clip |
+| `/api/convert` | `POST` | transcribe and re-synthesize source media |
+| `/api/convert/finalize` | `POST` | synthesize from an edited reviewed transcript |
+| `/api/history` | `GET` | list generated output history |
+| `/api/history/{id}` | `DELETE` | delete one generated item |
+| `/api/history` | `DELETE` | clear all generated history |
+| `/api/status` | `GET` | inspect loaded models, memory state, and device |
+| `/api/unload` | `POST` | unload all models from memory |
+
+## Runtime Behavior
+
+### Device selection
+
+At backend startup, `backend/config.py` chooses:
+
+- `cuda:0` when CUDA is available
+- `mps` on Apple Silicon when MPS is available
+- `cpu` otherwise
+
+TTS dtype and attention implementation are also selected from that same detection step.
+
+### ASR model choices
+
+The app currently exposes these faster-whisper sizes:
 
 - `tiny`
 - `base`
@@ -121,56 +215,83 @@ Available transcription sizes:
 - `large-v3`
 - `turbo`
 
-Recommendation:
+### Supported language choices in the UI
 
-- use `base` or `tiny` on a Mac if memory pressure is high
-- use larger models only if you need better transcription quality and your machine can handle it
+- `Auto`
+- `en`, `ar`, `de`, `es`, `fr`, `it`, `ja`, `ko`, `pt`, `ru`, `zh`
 
-## Memory Behavior
+### Long-text synthesis
 
-This app is optimized to reduce system freezing:
+Long text is chunked on sentence boundaries in `backend/services/tts_service.py` using `TTS_CHUNK_CHAR_LIMIT`, which defaults to `280` characters. Chunks are synthesized separately and stitched together.
 
-- Qwen TTS is not loaded at startup
-- Whisper is not kept in memory after transcription
-- the app unloads the ASR model before loading TTS
-- the app unloads the TTS model before loading ASR
+## Storage Model
 
-This is important on Apple Silicon because both models can otherwise consume large amounts of unified memory.
+### Saved voice profiles
 
-## Transcript Formatting
+Saved voices live in `saved_voices/` and are served back to the UI through:
 
-Transcription output is cleaned for readability:
+- `/voices-static/<name>.wav`
 
-- repeated whitespace is normalized
-- a new line is inserted after sentence-ending punctuation
+### Generated outputs
+
+Generated or converted files are persisted to `generated/` as:
+
+- `<timestamp>_<kind>_<voice>.wav`
+- `<timestamp>_<kind>_<voice>.json`
+
+The JSON sidecar stores metadata such as text, voice name, emotion, speed, pitch, and playback URL.
+
+## Privacy
+
+This project is designed for local use. The application stores voice references, transcripts, and generated audio on disk inside the repository workspace. Model downloads happen from external model hosts on first run, but inference itself is performed locally.
+
+If you plan to demo the project publicly, avoid committing real user voice samples or sensitive transcripts into `saved_voices/` or `generated/`.
 
 ## Troubleshooting
 
-### Port already in use
-No action is usually needed. The app automatically picks the next free port.
+### Port conflicts
 
-### Mac becomes slow or hangs
-- use ASR model `tiny` or `base`
-- transcribe shorter clips
-- close other heavy apps
-- avoid repeated large transcription + generation jobs without a pause
+- Backend defaults to `8000`
+- Frontend defaults to `3000`
 
-### First transcription is slow
-This is normal if the Whisper model is being downloaded for the first time.
+If one is already occupied, either stop the conflicting process or start the services manually on different ports.
 
-### Reference transcript quality affects voice cloning
-For best results, make sure the reference transcript exactly matches what is spoken in the reference audio.
+### Slow first run
 
-## Notes
+The first request may take noticeably longer because models are being downloaded or loaded into memory.
 
-- Generated audio currently plays in the UI as WAV-style audio output
-- transcript text remains editable before synthesis
-- `plan.md` contains the broader roadmap for future improvements
+### Memory pressure on laptops
 
-## Future Improvements
+If your machine becomes sluggish:
 
-- MP3 export
-- transcript `.txt` export
-- subtitle export
-- optional low-memory mode toggle
-- backend swap support for Qwen ASR
+- use `tiny` or `base` for faster-whisper
+- unload models via `POST /api/unload`
+- avoid running large ASR and TTS jobs in parallel
+
+### Weak cloning quality
+
+Cloning quality depends heavily on the reference pair:
+
+- clean reference audio helps
+- the transcript should match the spoken audio exactly
+- short noisy clips reduce fidelity
+
+## Legacy App
+
+The original Gradio app is still present in `app.py`. It uses the same `saved_voices/` storage layout and can be run independently if you want the older single-file interface.
+
+```bash
+./venv/bin/python app.py
+```
+
+## Launch Notes
+
+If you are announcing the project publicly, the safest headline is:
+
+`Local voice cloning studio with reusable voice profiles, transcription, subtitle export, and voice-to-voice conversion.`
+
+That accurately matches the repository today without overselling cloud, auth, or deployment features that are not part of the current codebase.
+
+## License
+
+MIT
