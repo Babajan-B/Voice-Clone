@@ -2,7 +2,7 @@
 
 Local-first voice cloning studio built with a FastAPI backend and a Next.js frontend. It lets you create reusable voice profiles, transcribe audio and video with faster-whisper, synthesize new speech with Qwen3-TTS, and convert source audio into a saved voice style without leaving your machine.
 
-![Voice Clone Architecture](docs/figures/voice-clone-full-workflow.svg)
+![Voice Clone Architecture](docs/figures/voice-clone-full-workflow.png)
 
 ## Why This Project Exists
 
