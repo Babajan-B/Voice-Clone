@@ -192,3 +192,21 @@ export function SettingsIcon({ size = 18, ...rest }: Props) {
     </svg>
   );
 }
+
+export function StudioIcon({ size = 18, ...rest }: Props) {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ size = 18, ...rest }: Props) {
+  return (
+    <svg {...base(size)} {...rest}>
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}

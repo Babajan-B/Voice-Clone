@@ -1,0 +1,15 @@
+{
+  "id": "20260427-133506_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777286106.4799612,
+  "created_at_iso": "2026-04-27T13:35:06",
+  "voice_name": "bob2",
+  "text": "We focus our search on the Nucleotide database, which archives a vast collection of DNA and RNA sequences from various organisms.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 8.72,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-133506_synthesize_bob2.wav"
+}

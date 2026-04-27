@@ -1,0 +1,15 @@
+{
+  "id": "20260427-003247_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777239167.565095,
+  "created_at_iso": "2026-04-27T00:32:47",
+  "voice_name": "bob2",
+  "text": "Let's explore its core functions.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 2.0,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-003247_synthesize_bob2.wav"
+}

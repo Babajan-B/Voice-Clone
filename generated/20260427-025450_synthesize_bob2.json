@@ -1,0 +1,15 @@
+{
+  "id": "20260427-025450_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777247690.3948889,
+  "created_at_iso": "2026-04-27T02:54:50",
+  "voice_name": "bob2",
+  "text": "The National Center for Biotechnology Information, or NCBI, is a foundational hub for biomedical and genomic data. Its Nucleotide database houses an extensive collection of DNA and RNA sequences.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 12.72,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-025450_synthesize_bob2.wav"
+}

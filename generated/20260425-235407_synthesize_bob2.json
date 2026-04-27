@@ -1,0 +1,15 @@
+{
+  "id": "20260425-235407_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777150447.0408268,
+  "created_at_iso": "2026-04-25T23:54:07",
+  "voice_name": "bob2",
+  "text": "After entering 'IL10' and initiating the search, we'll look for the gene-specific entry in the search results.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 6.32,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-235407_synthesize_bob2.wav"
+}

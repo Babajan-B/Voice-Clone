@@ -1,0 +1,15 @@
+{
+  "id": "20260427-021121_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777245081.118516,
+  "created_at_iso": "2026-04-27T02:11:21",
+  "voice_name": "bob2",
+  "text": "From the search results, click on the 'Bioinformatics with BB' channel. Browse its videos to find the 'AutoDock Vina' tutorial. Select this video and play it. If an advertisement appears, click the 'Skip Ad' button to proceed to the tutorial.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 15.12,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-021121_synthesize_bob2.wav"
+}

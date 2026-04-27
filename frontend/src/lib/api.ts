@@ -85,6 +85,13 @@ export const api = {
   generateUrl: `${API_BASE}/api/generate`,
   convertUrl: `${API_BASE}/api/convert`,
   convertFinalizeUrl: `${API_BASE}/api/convert/finalize`,
+  studioUrl: `${API_BASE}/api/studio/generate`,
+
+  async studioAuthStatus(): Promise<{ logged_in: boolean }> {
+    const r = await fetch(`${API_BASE}/api/studio/auth-status`, { cache: "no-store" });
+    if (!r.ok) throw new Error("auth-status failed");
+    return r.json();
+  },
 };
 
 export async function streamSSE(

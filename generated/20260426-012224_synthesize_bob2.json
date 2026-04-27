@@ -1,0 +1,15 @@
+{
+  "id": "20260426-012224_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777155744.940747,
+  "created_at_iso": "2026-04-26T01:22:24",
+  "voice_name": "bob2",
+  "text": "In this session, we'll introduce you to its core components and show you how to start navigating this powerful hub of biomedical data. Let's begin our exploration of NCBI's extensive resources.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 12.24,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-012224_synthesize_bob2.wav"
+}

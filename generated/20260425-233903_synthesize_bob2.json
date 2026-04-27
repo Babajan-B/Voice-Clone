@@ -1,0 +1,15 @@
+{
+  "id": "20260425-233903_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777149543.273036,
+  "created_at_iso": "2026-04-25T23:39:03",
+  "voice_name": "bob2",
+  "text": "Today, we'll explore differential gene expression analysis comparing two samples using the user-friendly Galaxy platform. While the core analysis is performed graphically, data preparation often begins on the command line.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 13.76,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-233903_synthesize_bob2.wav"
+}

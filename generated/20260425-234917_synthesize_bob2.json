@@ -1,0 +1,15 @@
+{
+  "id": "20260425-234917_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777150157.563422,
+  "created_at_iso": "2026-04-25T23:49:17",
+  "voice_name": "bob2",
+  "text": "First, we'll use `esearch` to find the unique Gene ID for human IL10. This ID acts as a handle to retrieve specific records. Once we have the Gene ID, we'll use `efetch` to retrieve the comprehensive GenBank format record for IL10.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 14.96,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-234917_synthesize_bob2.wav"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "20260426-232003_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777234803.946584,
+  "created_at_iso": "2026-04-26T23:20:03",
+  "voice_name": "bob2",
+  "text": "Hello, this is a quick voice clone smoke test.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 4.08,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-232003_synthesize_bob2.wav"
+}

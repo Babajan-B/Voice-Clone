@@ -58,7 +58,7 @@ export interface SSEDoneEvent {
 
 export type SSEEvent = SSEProgressEvent | SSEResultEvent | SSEErrorEvent | SSEDoneEvent;
 
-export type TabKey = "voices" | "synthesize" | "transcribe" | "convert" | "history";
+export type TabKey = "voices" | "synthesize" | "transcribe" | "convert" | "history" | "studio";
 
 export type RecorderState = "idle" | "recording" | "recorded";
 

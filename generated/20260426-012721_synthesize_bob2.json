@@ -1,0 +1,15 @@
+{
+  "id": "20260426-012721_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777156041.049524,
+  "created_at_iso": "2026-04-26T01:27:21",
+  "voice_name": "bob2",
+  "text": "From scientific literature to gene and protein sequences, clinical trials, and taxonomic data, NCBI serves as a central hub for researchers worldwide.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 10.24,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-012721_synthesize_bob2.wav"
+}

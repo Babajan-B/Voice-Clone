@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routers import voices, inference, history, status
+from routers import voices, inference, history, status, studio
 import config
 
 app = FastAPI(
@@ -26,6 +26,7 @@ app.include_router(voices.router, prefix="/api", tags=["voices"])
 app.include_router(inference.router, prefix="/api", tags=["inference"])
 app.include_router(history.router, prefix="/api", tags=["history"])
 app.include_router(status.router, prefix="/api", tags=["status"])
+app.include_router(studio.router, prefix="/api", tags=["studio"])
 
 
 @app.get("/")

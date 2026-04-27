@@ -1,0 +1,15 @@
+{
+  "id": "20260427-011721_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777241841.334559,
+  "created_at_iso": "2026-04-27T01:17:21",
+  "voice_name": "bob2",
+  "text": "Welcome to a brief overview of the National Center for Biotechnology Information, or NCBI. NCBI is a vital resource for biomedical research, providing free access to a vast array of databases and tools.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 13.12,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-011721_synthesize_bob2.wav"
+}

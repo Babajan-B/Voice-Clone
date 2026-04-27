@@ -1,0 +1,15 @@
+{
+  "id": "20260426-010209_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777154529.861436,
+  "created_at_iso": "2026-04-26T01:02:09",
+  "voice_name": "bob2",
+  "text": "Welcome! The National Center for Biotechnology Information, or NCBI, is a crucial resource for bioinformatics, hosting a vast collection of molecular biology and genetic information.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 11.520041666666666,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-010209_synthesize_bob2.wav"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "20260427-014256_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777243376.540394,
+  "created_at_iso": "2026-04-27T01:42:56",
+  "voice_name": "bob2",
+  "text": "After initiating the search, we'll quickly explore how to sort the retrieved literature by publication date, relevance, or other criteria to efficiently explore research.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 10.72,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-014256_synthesize_bob2.wav"
+}

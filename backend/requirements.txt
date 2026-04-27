@@ -10,3 +10,4 @@ accelerate
 transformers
 faster-whisper>=1.1.0
 git+https://github.com/QwenLM/Qwen3-TTS.git
+notebooklm-py[browser]>=0.3.4

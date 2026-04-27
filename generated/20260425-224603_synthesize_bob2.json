@@ -1,0 +1,15 @@
+{
+  "id": "20260425-224603_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777146363.448041,
+  "created_at_iso": "2026-04-25T22:46:03",
+  "voice_name": "bob2",
+  "text": "The per-base sequence quality plot shows that most positions have high Phred scores in the green zone above 28, indicating high-confidence base calls.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 9.36,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-224603_synthesize_bob2.wav"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "20260427-012650_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777242410.827323,
+  "created_at_iso": "2026-04-27T01:26:50",
+  "voice_name": "bob2",
+  "text": "It's home to critical information like DNA and protein sequences, gene expression data, and scientific literature through PubMed. select the database called pubmed , and then look for gene expression analysis",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 13.76,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-012650_synthesize_bob2.wav"
+}

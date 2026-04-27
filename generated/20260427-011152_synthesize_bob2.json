@@ -1,0 +1,15 @@
+{
+  "id": "20260427-011152_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777241512.4383192,
+  "created_at_iso": "2026-04-27T01:11:52",
+  "voice_name": "bob2",
+  "text": "From sequence databases like GenBank to literature repositories like PubMed, NCBI provides free access to critical information for scientists worldwide.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 9.68,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-011152_synthesize_bob2.wav"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "20260425-224512_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777146312.6457632,
+  "created_at_iso": "2026-04-25T22:45:12",
+  "voice_name": "bob2",
+  "text": "In this video, we check the quality of raw RNA-seq data from a Drosophila experiment. Let's look at the FastQC report.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 8.08,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-224512_synthesize_bob2.wav"
+}

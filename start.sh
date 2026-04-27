@@ -8,8 +8,10 @@ cd "$SCRIPT_DIR"
 
 # ── Ensure Node/npm is on PATH ─────────────────────────
 # Fresh shells launched from GUI may not source ~/.zshrc.
+set +e
 [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" >/dev/null 2>&1
-[ -f "$HOME/.zshrc" ] && source "$HOME/.zshrc" >/dev/null 2>&1 || true
+[ -f "$HOME/.zshrc" ] && . "$HOME/.zshrc" >/dev/null 2>&1
+set -e
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 if ! command -v npm >/dev/null 2>&1; then

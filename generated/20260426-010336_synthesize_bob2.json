@@ -1,0 +1,15 @@
+{
+  "id": "20260426-010336_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777154616.671755,
+  "created_at_iso": "2026-04-26T01:03:36",
+  "voice_name": "bob2",
+  "text": "It provides access to PubMed for scientific literature, GenBank for DNA sequences, and a myriad of other databases like dbSNP, GEO, and Protein. To begin exploring, we'll navigate to the NCBI homepage.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 15.2,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-010336_synthesize_bob2.wav"
+}

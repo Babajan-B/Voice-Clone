@@ -1,0 +1,15 @@
+{
+  "id": "20260427-133706_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777286226.236177,
+  "created_at_iso": "2026-04-27T13:37:06",
+  "voice_name": "bob2",
+  "text": "The FASTA format presents the raw nucleotide sequence, identifiable by its description line starting with a greater-than symbol. This standardized format is crucial for many bioinformatics applications.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 12.0,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-133706_synthesize_bob2.wav"
+}

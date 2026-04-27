@@ -1,7 +1,7 @@
 "use client";
 
 import type { TabKey } from "@/types";
-import { MicIcon, SparkleIcon, TextIcon, SwitchIcon, HistoryIcon } from "../shared/Icons";
+import { MicIcon, SparkleIcon, TextIcon, SwitchIcon, HistoryIcon, StudioIcon } from "../shared/Icons";
 
 interface Tab {
   key: TabKey;
@@ -16,6 +16,7 @@ export const TABS: Tab[] = [
   { key: "transcribe", label: "Transcribe",     icon: <TextIcon size={16} />,   shortcut: "3" },
   { key: "convert",    label: "Voice Convert",  icon: <SwitchIcon size={16} />, shortcut: "4" },
   { key: "history",    label: "History",        icon: <HistoryIcon size={16} />, shortcut: "5" },
+  { key: "studio",    label: "NLM Studio",     icon: <StudioIcon size={16} />,  shortcut: "6" },
 ];
 
 interface TabBarProps {

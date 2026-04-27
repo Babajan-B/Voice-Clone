@@ -1,0 +1,15 @@
+{
+  "id": "20260425-235330_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777150410.790477,
+  "created_at_iso": "2026-04-25T23:53:30",
+  "voice_name": "bob2",
+  "text": "In this tutorial, we'll navigate to the NCBI website to explore the Interleukin 10, or IL10, gene. First, we'll open our web browser and go to the official NCBI homepage. Once there, we'll use the search bar to locate the IL10 gene.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 15.52,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-235330_synthesize_bob2.wav"
+}

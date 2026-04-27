@@ -1,0 +1,15 @@
+{
+  "id": "20260427-020935_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777244975.551431,
+  "created_at_iso": "2026-04-27T02:09:35",
+  "voice_name": "bob2",
+  "text": "First, open your web browser and navigate to YouTube.com. Once on the YouTube homepage, locate the search bar at the top of the page. Type 'Bioinformatics with BB' and press Enter to search for the channel.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 12.48,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-020935_synthesize_bob2.wav"
+}

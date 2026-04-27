@@ -1,0 +1,15 @@
+{
+  "id": "20260426-011437_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777155277.9879858,
+  "created_at_iso": "2026-04-26T01:14:37",
+  "voice_name": "bob2",
+  "text": "It's an indispensable resource for anyone in biology and medicine, hosting a vast collection of databases covering genetics, genomics, proteomics, and scientific literature.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 11.2,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-011437_synthesize_bob2.wav"
+}

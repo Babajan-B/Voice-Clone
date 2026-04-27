@@ -1,0 +1,15 @@
+{
+  "id": "20260425-233938_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777149578.396258,
+  "created_at_iso": "2026-04-25T23:39:38",
+  "voice_name": "bob2",
+  "text": "This tutorial guides you through acquiring sample sequencing data, which you'll then upload to Galaxy.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 6.0,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-233938_synthesize_bob2.wav"
+}

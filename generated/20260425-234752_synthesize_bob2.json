@@ -1,0 +1,15 @@
+{
+  "id": "20260425-234752_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777150072.2467442,
+  "created_at_iso": "2026-04-25T23:47:52",
+  "voice_name": "bob2",
+  "text": "The National Center for Biotechnology Information, or NCBI, is a foundational resource for genomic data. To programmatically explore the IL10 gene and its position, we can leverage NCBI's E-utilities.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 13.12,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-234752_synthesize_bob2.wav"
+}

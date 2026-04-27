@@ -1,0 +1,15 @@
+{
+  "id": "20260426-013511_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777156511.478488,
+  "created_at_iso": "2026-04-26T01:35:11",
+  "voice_name": "bob2",
+  "text": "Upon arriving, you'll immediately notice the prominent search bar at the top of the page. This is your gateway to virtually all NCBI databases.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 8.4,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-013511_synthesize_bob2.wav"
+}

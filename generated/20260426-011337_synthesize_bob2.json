@@ -1,0 +1,15 @@
+{
+  "id": "20260426-011337_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777155217.962681,
+  "created_at_iso": "2026-04-26T01:13:37",
+  "voice_name": "bob2",
+  "text": "Welcome to this overview of the National Center for Biotechnology Information, or NCBI.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 6.24,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-011337_synthesize_bob2.wav"
+}

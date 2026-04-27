@@ -1,0 +1,15 @@
+{
+  "id": "20260427-013630_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777242990.772181,
+  "created_at_iso": "2026-04-27T01:36:30",
+  "voice_name": "bob2",
+  "text": "Welcome to a brief overview of the National Center for Biotechnology Information, or NCBI. click on all the database and and select the pubmed database. in search box now type the gene expression analysis, and search , and sort the literature",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 15.36,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260427-013630_synthesize_bob2.wav"
+}

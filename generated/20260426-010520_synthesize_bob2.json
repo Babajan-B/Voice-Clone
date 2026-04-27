@@ -1,0 +1,15 @@
+{
+  "id": "20260426-010520_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777154720.809376,
+  "created_at_iso": "2026-04-26T01:05:20",
+  "voice_name": "bob2",
+  "text": "Let's dive in and see how to effectively search and retrieve data from this invaluable bioinformatics hub.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 6.32,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-010520_synthesize_bob2.wav"
+}

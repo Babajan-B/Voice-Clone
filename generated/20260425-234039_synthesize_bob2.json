@@ -1,0 +1,15 @@
+{
+  "id": "20260425-234039_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777149639.778996,
+  "created_at_iso": "2026-04-25T23:40:39",
+  "voice_name": "bob2",
+  "text": "Within Galaxy, we'll cover key steps: quality control, read alignment, gene quantification, and differential expression analysis to identify significant gene changes between your samples.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 11.520041666666666,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-234039_synthesize_bob2.wav"
+}

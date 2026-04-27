@@ -1,0 +1,15 @@
+{
+  "id": "20260426-014439_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777157079.565351,
+  "created_at_iso": "2026-04-26T01:44:39",
+  "voice_name": "bob2",
+  "text": "Welcome to this comprehensive tutorial on navigating and utilizing the National Center for Biotechnology Information, or NCBI.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 8.4,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260426-014439_synthesize_bob2.wav"
+}

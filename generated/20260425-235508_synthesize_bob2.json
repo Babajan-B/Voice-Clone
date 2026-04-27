@@ -1,0 +1,15 @@
+{
+  "id": "20260425-235508_synthesize_bob2",
+  "kind": "synthesize",
+  "created_at": 1777150508.395345,
+  "created_at_iso": "2026-04-25T23:55:08",
+  "voice_name": "bob2",
+  "text": "Clicking on this entry will take us to the gene page, where we can find comprehensive information about IL10, including its chromosomal position, genomic context, and various related data.",
+  "source_filename": null,
+  "emotion": "neutral",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration": 11.6,
+  "sample_rate": 24000,
+  "audio_url": "/generated-static/20260425-235508_synthesize_bob2.wav"
+}
