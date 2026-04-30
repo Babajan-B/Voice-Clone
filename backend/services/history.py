@@ -14,6 +14,9 @@ import numpy as np
 import config
 
 
+_ENTRY_ID_RE = re.compile(r"^[0-9]{8}-[0-9]{6}_[A-Za-z0-9_-]+$")
+
+
 def _safe_slug(s: str, max_len: int = 40) -> str:
     s = re.sub(r"[^A-Za-z0-9_\-]+", "-", s).strip("-")
     return s[:max_len] or "untitled"
@@ -84,6 +87,9 @@ def list_history(limit: int = 100) -> list[dict]:
 
 
 def delete_entry(entry_id: str) -> bool:
+    if not _ENTRY_ID_RE.fullmatch(entry_id or ""):
+        return False
+
     wav = os.path.join(config.GENERATED_DIR, f"{entry_id}.wav")
     meta = os.path.join(config.GENERATED_DIR, f"{entry_id}.json")
     deleted = False

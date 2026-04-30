@@ -1,9 +1,11 @@
+import math
 import re
 import numpy as np
 import librosa
 
 import config
 from utils.audio import numpy_to_wav_base64
+from utils.errors import VoiceCloneError
 
 
 EMOTION_PREFIXES = {
@@ -17,7 +19,44 @@ EMOTION_PREFIXES = {
     "whisper": "Whisper this softly: ",
 }
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\u00C0-\u024F\u4E00-\u9FFF\u0600-\u06FF])")
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?\u061f\u06d4\u3002\uff01\uff1f])\s+")
+_SOFT_SPLIT_RE = re.compile(r"([,;:\u060c\u061b،؛]\s+|\s+)")
+
+
+def _normalize_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def _split_long_piece(piece: str, limit: int) -> list[str]:
+    """Split an over-limit sentence while preserving words where possible."""
+    parts: list[str] = []
+    buf = ""
+
+    for token in _SOFT_SPLIT_RE.split(piece):
+        if not token:
+            continue
+        candidate = f"{buf}{token}" if buf else token.lstrip()
+        if len(candidate) <= limit:
+            buf = candidate
+            continue
+
+        if buf.strip():
+            parts.append(buf.strip())
+            buf = token.lstrip()
+        elif not buf:
+            buf = token.lstrip()
+
+        while len(buf) > limit:
+            split_at = buf.rfind(" ", 0, limit + 1)
+            if split_at < max(1, int(limit * 0.6)):
+                split_at = limit
+            parts.append(buf[:split_at].strip())
+            buf = buf[split_at:].strip()
+
+    if buf.strip():
+        parts.append(buf.strip())
+
+    return parts
 
 
 def _split_into_chunks(text: str, limit: int) -> list[str]:
@@ -25,48 +64,56 @@ def _split_into_chunks(text: str, limit: int) -> list[str]:
 
     Falls back to comma/whitespace splits if a single sentence exceeds the limit.
     """
-    text = text.strip()
+    if limit < 80:
+        raise ValueError("TTS_CHUNK_CHAR_LIMIT must be at least 80")
+
+    text = _normalize_text(text)
     if not text or len(text) <= limit:
         return [text] if text else []
 
     sentences = _SENTENCE_SPLIT_RE.split(text)
     chunks: list[str] = []
     buf = ""
+
     for s in sentences:
         s = s.strip()
         if not s:
             continue
-        if len(s) > limit:
-            # Split long sentence on commas, then whitespace.
-            pieces = [p.strip() for p in re.split(r",\s+", s) if p.strip()]
-            for p in pieces:
-                if len(p) > limit:
-                    # Hard split every `limit` chars at a space boundary.
-                    words = p.split()
-                    cur = ""
-                    for w in words:
-                        if len(cur) + len(w) + 1 > limit and cur:
-                            chunks.append(cur.strip())
-                            cur = w
-                        else:
-                            cur = (cur + " " + w).strip()
-                    if cur:
-                        chunks.append(cur)
-                else:
-                    if len(buf) + len(p) + 2 > limit and buf:
-                        chunks.append(buf.strip())
-                        buf = p
-                    else:
-                        buf = (buf + ", " + p).strip(", ")
-            continue
-        if len(buf) + len(s) + 1 > limit and buf:
-            chunks.append(buf.strip())
-            buf = s
-        else:
-            buf = (buf + " " + s).strip()
+
+        pieces = _split_long_piece(s, limit) if len(s) > limit else [s]
+        for piece in pieces:
+            separator = "" if not buf else " "
+            if len(buf) + len(separator) + len(piece) > limit and buf:
+                chunks.append(buf.strip())
+                buf = piece
+            else:
+                buf = f"{buf}{separator}{piece}".strip()
+
     if buf:
         chunks.append(buf.strip())
+
     return chunks
+
+
+def estimate_chunk_count(text: str) -> int:
+    return len(_split_into_chunks(text, config.TTS_CHUNK_CHAR_LIMIT))
+
+
+def _validate_audio_clip(clip: np.ndarray, idx: int) -> np.ndarray:
+    clip = np.asarray(clip, dtype=np.float32).reshape(-1)
+    if clip.size == 0:
+        raise VoiceCloneError(
+            f"TTS returned empty audio for chunk {idx}.",
+            code="TTS_EMPTY_CHUNK",
+            hint="Try shortening the text near that chunk or lowering TTS_CHUNK_CHAR_LIMIT.",
+        )
+    if not np.all(np.isfinite(clip)):
+        raise VoiceCloneError(
+            f"TTS returned invalid audio values for chunk {idx}.",
+            code="TTS_INVALID_AUDIO",
+            hint="Try regenerating, or reduce pitch/speed changes for long text.",
+        )
+    return clip
 
 
 def _crossfade_concat(clips: list[np.ndarray], sample_rate: int, fade_ms: int = 30) -> np.ndarray:
@@ -98,6 +145,16 @@ def _apply_prosody(audio_np: np.ndarray, sample_rate: int, speed: float, pitch_s
     return out
 
 
+def _clamp_controls(speed: float, pitch_semitones: float) -> tuple[float, float]:
+    speed = float(speed)
+    pitch_semitones = float(pitch_semitones)
+    if not math.isfinite(speed):
+        speed = 1.0
+    if not math.isfinite(pitch_semitones):
+        pitch_semitones = 0.0
+    return min(max(speed, 0.5), 1.75), min(max(pitch_semitones, -12.0), 12.0)
+
+
 def synthesize_sync(
     tts_model,
     ref_audio_path: str,
@@ -114,8 +171,10 @@ def synthesize_sync(
     on sentence boundaries, each chunk synthesized separately, and the
     resulting audio concatenated with a short crossfade.
     """
+    speed, pitch_semitones = _clamp_controls(speed, pitch_semitones)
     prefix = EMOTION_PREFIXES.get((emotion or "neutral").lower(), "")
-    chunks = _split_into_chunks(target_text, config.TTS_CHUNK_CHAR_LIMIT)
+    effective_limit = max(80, config.TTS_CHUNK_CHAR_LIMIT - len(prefix))
+    chunks = _split_into_chunks(target_text, effective_limit)
 
     if not chunks:
         raise ValueError("target_text is empty after chunking")
@@ -131,7 +190,7 @@ def synthesize_sync(
             ref_text=ref_transcript,
         )
         sample_rate = int(sr)
-        clips.append(np.asarray(wavs[0], dtype=np.float32))
+        clips.append(_validate_audio_clip(wavs[0], idx + 1))
         if progress_cb is not None:
             try:
                 progress_cb(idx + 1, len(chunks))
