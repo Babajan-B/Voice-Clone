@@ -9,10 +9,11 @@ from fastapi.responses import StreamingResponse, PlainTextResponse
 import config
 from services import model_manager, history as history_svc
 from services.asr_service import transcribe_sync
-from services.tts_service import synthesize_sync
+from services.tts_service import estimate_chunk_count, synthesize_sync
 from utils.audio import uploaded_bytes_to_wav, cleanup_temp_file
 from utils.errors import VoiceCloneError
 from utils.subtitles import segments_to_srt, segments_to_vtt
+from utils.voices import voice_profile_paths
 
 router = APIRouter()
 
@@ -145,8 +146,14 @@ async def generate(
             yield progress(0.05, "Normalizing reference audio...")
             wav_path = await asyncio.to_thread(uploaded_bytes_to_wav, audio_bytes, original_name)
 
+            chunk_count = estimate_chunk_count(target_text.strip())
             yield progress(0.15, "Loading Qwen TTS model...")
-            yield progress(0.35, "Synthesizing cloned voice...")
+            yield progress(
+                0.35,
+                "Synthesizing cloned voice..."
+                if chunk_count <= 1
+                else f"Synthesizing cloned voice in {chunk_count} chunks...",
+            )
 
             data = await model_manager.with_tts(
                 synthesize_sync,
@@ -211,10 +218,15 @@ async def convert(
     if not voice_name.strip() and not transcribe_only:
         raise HTTPException(422, "voice_name is required")
 
-    ref_audio_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.wav")
-    ref_transcript_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.txt")
+    safe_voice_name = voice_name.strip()
+    ref_audio_path = ""
+    ref_transcript_path = ""
     ref_transcript = ""
     if not transcribe_only:
+        try:
+            safe_voice_name, ref_audio_path, ref_transcript_path = voice_profile_paths(voice_name)
+        except ValueError:
+            raise HTTPException(422, "Invalid voice_name")
         if not os.path.exists(ref_audio_path) or not os.path.exists(ref_transcript_path):
             raise HTTPException(404, f"Voice profile '{voice_name}' not found")
         with open(ref_transcript_path, "r", encoding="utf-8") as f:
@@ -253,7 +265,13 @@ async def convert(
                 return
 
             yield progress(0.5, "Loading TTS model...")
-            yield progress(0.6, f"Synthesizing with voice '{voice_name}'...")
+            chunk_count = estimate_chunk_count(transcript)
+            yield progress(
+                0.6,
+                f"Synthesizing with voice '{safe_voice_name}'..."
+                if chunk_count <= 1
+                else f"Synthesizing with voice '{safe_voice_name}' in {chunk_count} chunks...",
+            )
 
             tts_data = await model_manager.with_tts(
                 synthesize_sync,
@@ -273,7 +291,7 @@ async def convert(
                     tts_data["audio_np"],
                     tts_data["sample_rate"],
                     kind="convert",
-                    voice_name=voice_name,
+                    voice_name=safe_voice_name,
                     text=transcript,
                     source_filename=original_name,
                     emotion=emotion,
@@ -314,8 +332,10 @@ async def convert_finalize(
 ):
     if not transcript.strip():
         raise HTTPException(422, "transcript is required")
-    ref_audio_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.wav")
-    ref_transcript_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.txt")
+    try:
+        safe_voice_name, ref_audio_path, ref_transcript_path = voice_profile_paths(voice_name)
+    except ValueError:
+        raise HTTPException(422, "Invalid voice_name")
     if not os.path.exists(ref_audio_path) or not os.path.exists(ref_transcript_path):
         raise HTTPException(404, f"Voice profile '{voice_name}' not found")
     with open(ref_transcript_path, "r", encoding="utf-8") as f:
@@ -324,7 +344,13 @@ async def convert_finalize(
     async def stream() -> AsyncGenerator[str, None]:
         try:
             yield progress(0.2, "Loading TTS model...")
-            yield progress(0.4, f"Synthesizing with voice '{voice_name}'...")
+            chunk_count = estimate_chunk_count(transcript.strip())
+            yield progress(
+                0.4,
+                f"Synthesizing with voice '{safe_voice_name}'..."
+                if chunk_count <= 1
+                else f"Synthesizing with voice '{safe_voice_name}' in {chunk_count} chunks...",
+            )
             tts_data = await model_manager.with_tts(
                 synthesize_sync,
                 ref_audio_path,
@@ -342,7 +368,7 @@ async def convert_finalize(
                     tts_data["audio_np"],
                     tts_data["sample_rate"],
                     kind="convert",
-                    voice_name=voice_name,
+                    voice_name=safe_voice_name,
                     text=transcript.strip(),
                     emotion=emotion,
                     speed=speed,

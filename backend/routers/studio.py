@@ -10,9 +10,10 @@ import config
 from services import model_manager, history as history_svc
 from services.asr_service import transcribe_sync
 from services.notebooklm_service import generate_podcast_audio, is_authenticated
-from services.tts_service import synthesize_sync
+from services.tts_service import estimate_chunk_count, synthesize_sync
 from utils.audio import cleanup_temp_file, uploaded_bytes_to_wav
 from utils.errors import VoiceCloneError
+from utils.voices import voice_profile_paths
 
 router = APIRouter()
 
@@ -79,8 +80,10 @@ async def studio_generate(
     if not sources_list:
         raise HTTPException(422, "At least one source is required")
 
-    ref_audio_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.wav")
-    ref_transcript_path = os.path.join(config.SAVED_VOICES_DIR, f"{voice_name}.txt")
+    try:
+        safe_voice_name, ref_audio_path, ref_transcript_path = voice_profile_paths(voice_name)
+    except ValueError:
+        raise HTTPException(422, "Invalid voice_name")
     if not os.path.exists(ref_audio_path) or not os.path.exists(ref_transcript_path):
         raise HTTPException(404, f"Voice profile '{voice_name}' not found")
 
@@ -146,7 +149,13 @@ async def studio_generate(
             )
             transcript = asr_data["transcript"]
 
-            yield _progress(0.72, f"Synthesizing with voice '{voice_name}'...")
+            chunk_count = estimate_chunk_count(transcript)
+            yield _progress(
+                0.72,
+                f"Synthesizing with voice '{safe_voice_name}'..."
+                if chunk_count <= 1
+                else f"Synthesizing with voice '{safe_voice_name}' in {chunk_count} chunks...",
+            )
             tts_data = await model_manager.with_tts(
                 synthesize_sync,
                 ref_audio_path,
@@ -165,7 +174,7 @@ async def studio_generate(
                     tts_data["audio_np"],
                     tts_data["sample_rate"],
                     kind="convert",
-                    voice_name=voice_name,
+                    voice_name=safe_voice_name,
                     text=transcript,
                     source_filename="notebooklm_podcast",
                     emotion=emotion,

@@ -4,6 +4,7 @@ import os
 import shutil
 import config
 from utils.audio import uploaded_bytes_to_wav, cleanup_temp_file
+from utils.voices import sanitize_voice_name, voice_profile_paths
 
 router = APIRouter()
 
@@ -31,11 +32,6 @@ def get_saved_voices():
     return sorted(voices)
 
 
-def sanitize_voice_name(name: str) -> str:
-    """Sanitize voice name to be filesystem-safe."""
-    return "".join([c for c in name if c.isalnum() or c in (' ', '-', '_')]).strip()
-
-
 @router.get("/voices")
 async def list_voices() -> VoiceResponse:
     """Get list of all saved voice profiles."""
@@ -45,8 +41,10 @@ async def list_voices() -> VoiceResponse:
 @router.get("/voices/{name}")
 async def get_voice(name: str) -> VoiceDetail:
     """Get a specific voice profile details."""
-    audio_path = os.path.join(config.SAVED_VOICES_DIR, f"{name}.wav")
-    transcript_path = os.path.join(config.SAVED_VOICES_DIR, f"{name}.txt")
+    try:
+        safe_name, audio_path, transcript_path = voice_profile_paths(name)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid voice name")
 
     if not os.path.exists(audio_path) or not os.path.exists(transcript_path):
         raise HTTPException(status_code=404, detail=f"Voice '{name}' not found")
@@ -55,9 +53,9 @@ async def get_voice(name: str) -> VoiceDetail:
         transcript = f.read()
 
     return VoiceDetail(
-        name=name,
+        name=safe_name,
         transcript=transcript,
-        audio_url=f"/voices-static/{name}.wav"
+        audio_url=f"/voices-static/{safe_name}.wav"
     )
 
 
@@ -101,8 +99,10 @@ async def save_voice(
 @router.delete("/voices/{name}")
 async def delete_voice(name: str) -> VoiceResponse:
     """Delete a voice profile."""
-    audio_path = os.path.join(config.SAVED_VOICES_DIR, f"{name}.wav")
-    transcript_path = os.path.join(config.SAVED_VOICES_DIR, f"{name}.txt")
+    try:
+        _, audio_path, transcript_path = voice_profile_paths(name)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid voice name")
 
     deleted = False
     if os.path.exists(audio_path):

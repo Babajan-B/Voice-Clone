@@ -1,5 +1,21 @@
 *.md
 !README.md
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+
+# Runtime audio/profile artifacts
 saved_voices/*
 !saved_voices/.gitkeep
-__pycache__/
+generated/*
+!generated/.gitkeep
+
+# Local/temp outputs
+tmp/
+.DS_Store
